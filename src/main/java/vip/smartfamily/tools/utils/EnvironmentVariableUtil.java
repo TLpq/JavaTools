@@ -1,4 +1,4 @@
-package vip.smartfamily.tools;
+package vip.smartfamily.tools.utils;
 
 /**
  * JAVA 程序环境变量

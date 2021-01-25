@@ -1,5 +1,6 @@
 package vip.smartfamily.tools.example;
 
+import vip.smartfamily.tools.http.DataHandle;
 import vip.smartfamily.tools.http.HttpDataUtil;
 import vip.smartfamily.tools.http.ReData;
 import vip.smartfamily.tools.http.entity.HttpData;
@@ -9,6 +10,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class HttpServer extends Thread {
 
@@ -18,35 +21,19 @@ public class HttpServer extends Thread {
     private OutputStream output;
 
     public HttpServer() throws Exception {
-        serverSocket = new ServerSocket(10222, 1);
+        serverSocket = new ServerSocket(10222, 12);
     }
 
     @Override
     public void run() {
+        HttpDataUtil.SERVER_NAME = "java server";
+        HttpDataUtil.SERVER_VERSION = "1.0";
+        ExecutorService executorService = Executors.newCachedThreadPool();
         while (true) {
             try {
                 socket = serverSocket.accept();
                 socket.setSoTimeout(10000);
-                HttpDataUtil httpDataUtil = new HttpDataUtil("java server", "1.0");
-
-                try {
-                    HttpData httpData = httpDataUtil.setHttpData(socket);
-
-                    ReData reData = new ReData.Builder()
-                            .setStatus(200)
-                            .setContentType("application/json;charset=UTF-8")
-                            .setConnection("Keep-Alive")
-                            .setAcceptEncoding("gzip, deflate")
-                            .addHead("momd","ddddd")
-                            .data(httpData.getData())
-                            .builder();
-
-                    httpDataUtil.send(reData);
-                } catch (HttpDataException e) {
-                    e.printStackTrace();
-                } finally {
-                    httpDataUtil.close();
-                }
+                executorService.execute(new DataHandle(socket));
             } catch (Exception e) {
                 e.printStackTrace();
             }

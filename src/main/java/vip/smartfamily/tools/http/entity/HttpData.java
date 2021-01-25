@@ -2,6 +2,9 @@ package vip.smartfamily.tools.http.entity;
 
 import java.util.HashMap;
 
+/**
+ * Socket 数据格式
+ */
 public class HttpData {
     private String requestType;
     private int contentLen;

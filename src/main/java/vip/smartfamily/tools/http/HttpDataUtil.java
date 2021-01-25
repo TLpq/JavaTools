@@ -9,15 +9,18 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.HashMap;
 
+/**
+ * Socket 数据处理
+ */
 public class HttpDataUtil {
     /**
      * 服务名称
      */
-    public static String SERVER_NAME;
+    public static String SERVER_NAME = "server";
     /**
      * 服务版本
      */
-    public static String SERVER_VERSION;
+    public static String SERVER_VERSION = "1.0";
 
     /**
      * 客户端连接
@@ -36,15 +39,7 @@ public class HttpDataUtil {
      */
     private byte[] dataBuffer = new byte[1024 * 1024];
 
-    /**
-     * http服务工具
-     *
-     * @param serverName 服务名称
-     * @param version    服务版本
-     */
-    public HttpDataUtil(String serverName, String version) {
-        SERVER_NAME = serverName;
-        SERVER_VERSION = version;
+    public HttpDataUtil() {
     }
 
     /**

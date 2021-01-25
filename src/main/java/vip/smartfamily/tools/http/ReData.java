@@ -3,6 +3,9 @@ package vip.smartfamily.tools.http;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * HTTP 协议请求返回
+ */
 public class ReData {
     private String heads;
     private byte[] body;
