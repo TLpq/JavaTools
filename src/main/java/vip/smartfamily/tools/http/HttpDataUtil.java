@@ -13,11 +13,11 @@ public class HttpDataUtil {
     /**
      * 服务名称
      */
-    private String serverName;
+    public static String SERVER_NAME;
     /**
      * 服务版本
      */
-    private String serverVersion;
+    public static String SERVER_VERSION;
 
     /**
      * 客户端连接
@@ -43,8 +43,8 @@ public class HttpDataUtil {
      * @param version    服务版本
      */
     public HttpDataUtil(String serverName, String version) {
-        this.serverName = serverName;
-        this.serverVersion = version;
+        SERVER_NAME = serverName;
+        SERVER_VERSION = version;
     }
 
     /**
@@ -53,7 +53,7 @@ public class HttpDataUtil {
      * @param socket 客户端连接
      * @throws HttpDataException http 数据错误
      */
-    public void setHttpData(Socket socket) throws HttpDataException {
+    public HttpData setHttpData(Socket socket) throws HttpDataException {
         try {
             if (socket != null) {
                 this.socket = socket;
@@ -141,6 +141,8 @@ public class HttpDataUtil {
                     if (data != null) {
                         httpData.setData(data);
                     }
+
+                    return httpData;
                 }
             }
         } catch (IOException e) {
@@ -153,17 +155,20 @@ public class HttpDataUtil {
     /**
      * 发送响应数据
      */
-    public void send() {
+    public void send(ReData reData) {
         if (output != null) {
-            String head = "HTTP/1.0 200 OK\r\n" +
-                    "Server: " + serverName + " /" + serverVersion + "\r\n" +
-                    "Connection: Keep-Alive\r\n" +
-                    "Content-Type: application/json;charset=UTF-8\r\n" +
-                    "Accept-Encoding: gzip, deflate\r\n" +
-                    "\r\n";
+            byte[] heads = reData.getHeads().getBytes();
+            byte[] data;
+            if (reData.getBody() == null) {
+                data = heads.clone();
+            } else {
+                data = new byte[heads.length + reData.getBody().length];
+                System.arraycopy(heads, 0, data, 0, heads.length);
+                System.arraycopy(reData.getBody(), 0, data, heads.length, reData.getBody().length);
+            }
 
             try {
-                output.write(head.getBytes());
+                output.write(data);
             } catch (IOException e) {
                 e.printStackTrace();
             }
