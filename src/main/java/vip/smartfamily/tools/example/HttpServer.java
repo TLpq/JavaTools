@@ -1,6 +1,9 @@
 package vip.smartfamily.tools.example;
 
 import vip.smartfamily.tools.http.HttpDataUtil;
+import vip.smartfamily.tools.http.ReData;
+import vip.smartfamily.tools.http.entity.HttpData;
+import vip.smartfamily.tools.http.exception.HttpDataException;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,7 +16,6 @@ public class HttpServer extends Thread {
     private Socket socket;
     private InputStream input;
     private OutputStream output;
-    private HttpDataUtil httpDataUtil = new HttpDataUtil("","");
 
     public HttpServer() throws Exception {
         serverSocket = new ServerSocket(10222, 1);
@@ -25,11 +27,26 @@ public class HttpServer extends Thread {
             try {
                 socket = serverSocket.accept();
                 socket.setSoTimeout(10000);
-                httpDataUtil.setHttpData(socket);
+                HttpDataUtil httpDataUtil = new HttpDataUtil("java server", "1.0");
 
+                try {
+                    HttpData httpData = httpDataUtil.setHttpData(socket);
 
-                httpDataUtil.send();
-                httpDataUtil.close();
+                    ReData reData = new ReData.Builder()
+                            .setStatus(200)
+                            .setContentType("application/json;charset=UTF-8")
+                            .setConnection("Keep-Alive")
+                            .setAcceptEncoding("gzip, deflate")
+                            .addHead("momd","ddddd")
+                            .data(httpData.getData())
+                            .builder();
+
+                    httpDataUtil.send(reData);
+                } catch (HttpDataException e) {
+                    e.printStackTrace();
+                } finally {
+                    httpDataUtil.close();
+                }
             } catch (Exception e) {
                 e.printStackTrace();
             }
